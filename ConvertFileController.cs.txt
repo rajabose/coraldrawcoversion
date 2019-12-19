@@ -1,0 +1,92 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+using CDraw = Corel.Interop.CorelDRAW;
+using CDrawCore = Corel.Interop.VGCore;
+using System.IO;
+using System.Web.Script.Serialization;
+
+namespace cdrToPdf.Controllers
+{
+    public class ConvertFileController : ApiController
+    {
+        //private SourceFile tempSource = new SourceFile { id = 1, filePath = "https://file.io/kI14w5", fileType = "cdr" };
+
+        // GET: api/ConvertFile
+        public string Get()
+        {
+            //try
+            //{
+            //    WebClient wc = new WebClient();
+            //    wc.DownloadFile(tempSource.filePath, @"D:\testcdr\test.cdr");
+            //}
+            //catch
+            //{
+            //    return ;
+            //}
+            //pdfFile = wc.DownloadFile(tempSource.filePath);
+            CDrawCore.Application cdr;
+            string url = @"D:\VisualStudioWorkspace\cdrToPdf\cdrToPdf\windowsCDR.cdr";//Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"test.cdr");
+            string newUrl = @"D:\VisualStudioWorkspace\cdrToPdf\cdrToPdf\convertedPDF.pdf";
+            try
+            {
+                cdr = new CDraw.Application();
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+            try
+            {
+                if(File.Exists(url)) {
+                    cdr.OpenDocument(url, 1);
+                } else
+                {
+                    return "File does not exists";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+            //System.Threading.Thread.Sleep(5000);
+            List<CDrawCore.ColorProfile> colorList = cdr.ActiveDocument.ColorContext.ColorProfiles.Cast<CDrawCore.ColorProfile>().ToList();
+            string str2 = cdr.ActiveDocument.FileName.ToString();
+            //string str3 = new JavaScriptSerializer().Serialize(cdr.ActiveDocument.PDFSettings);
+            cdr.ActiveDocument.PublishToPDF(newUrl);
+            cdr.ActiveDocument.Close();
+            cdr.Quit();
+            /*int i = 0;
+            //var test = temp.Count;
+            while(temp.Count > i)
+            {
+                var a = temp.ItemByIndex[i];
+                i++;
+            }*/
+            return "test";
+            //return "Default return";
+        }
+        public string Get(int id)
+        {
+            return "Hi";
+        }
+
+        // POST: api/ConvertFile
+        public void Post([FromBody]string value)
+        {
+        }
+
+        // PUT: api/ConvertFile/5
+        public void Put(int id, [FromBody]string value)
+        {
+        }
+
+        // DELETE: api/ConvertFile/5
+        public void Delete(int id)
+        {
+        }
+    }
+}
